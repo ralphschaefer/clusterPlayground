@@ -26,17 +26,6 @@ class Echo(akkaArtifacts: AkkaArtifacts) extends Actor {
       )
     case SubscribeAck(item) =>
       println("subsribe akn " + item)
-      mediator ! Publish("conversation", EchoMessage("Akn subscription from: "+self))
-      Thread.sleep(3000)
-      mediator ! Count
-
-      /*
-      Thread.sleep(10000)
-
-      println("GO!!")
-      akkaArtifacts.senderActor ! EchoMessage("-----------")
-      */
-
     case message => println("(ECHO) Undefined Message: "+message)
   }
 

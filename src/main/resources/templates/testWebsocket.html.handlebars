@@ -1,0 +1,52 @@
+<h1>Websocket test page</h1>
+<label for="msg">Message: </label>
+<input type="text" id="msg">
+<button onclick="sendMsg(); return false;">Send to All</button>
+<br>
+<br>
+<textarea class="messagebox" id="messagesTextArea" disabled></textarea>
+<script type="text/javascript">
+
+    var webSocket;
+
+    host = location.hostname+(location.port ? ':'+location.port: '');
+    webSocket = new WebSocket("ws://" + host + "/listen");
+    webSocket.onopen = function(message) { processOpen(message); };
+    webSocket.onclose = function(message) { processClose(message); };
+    webSocket.onerror = function(message) { processError(message); };
+    webSocket.onmessage = function(message) { processMessage(message); };
+    console.log("websocket connected");
+
+    var messagesTextArea = document.getElementById("messagesTextArea");
+
+    messagesTextArea.scrollTop = messagesTextArea.scrollHeight
+
+    function processOpen(message){
+        messagesTextArea.value += "Server connect..." + JSON.stringify(message) + "\n";
+        messagesTextArea.scrollTop = messagesTextArea.scrollHeight
+    }
+
+    function processClose(message) {
+        webSocket.send("client disconnected");
+        messagesTextArea.value += "Server Disconnect..." + JSON.stringify(message) + "\n";
+        messagesTextArea.scrollTop = messagesTextArea.scrollHeight
+    }
+
+    function processError(message){
+        messagesTextArea.value += "error " + JSON.stringify(message) + "\n"
+        messagesTextArea.scrollTop = messagesTextArea.scrollHeight
+    }
+
+    function processMessage(message){
+        messagesTextArea.value += JSON.stringify(JSON.parse(message.data), null, 2) + "\n" + "____________________________\n\n";
+        messagesTextArea.scrollTop = messagesTextArea.scrollHeight
+    }
+
+
+    function sendMsg() {
+        var msg = document.getElementById("msg").value;
+        document.getElementById("msg").value = "";
+
+        webSocket.send(msg);
+    }
+</script>
